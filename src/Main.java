@@ -85,8 +85,8 @@ public class Main extends Application {
             int dx = points[i];
             int dy = points[++i];
 
-            double newX = (tile.y % 2 != 0) ? tile.x + dx : tile.x + dx;
-            double newY = (tile.y % 2 != 0) ? tile.y + dy : tile.y + dy;
+            double newX = tile.x + dx;
+            double newY = tile.y + dy;
 
             if (newX >= 0 && newX < X_TILES
                     && newY >= 0 && newY < Y_TILES) {
