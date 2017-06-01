@@ -12,8 +12,8 @@ public class Main extends Application {
     private static final int W = 800 + TILE_SIZE / 2;
     private static final int H = 600;
 
-    static final int X_TILES = 5;
-    static final int Y_TILES = 5;
+    static final int X_TILES = 10;
+    static final int Y_TILES = 9;
 
     static Tile[][] grid = new Tile[X_TILES][Y_TILES];
     private static Scene scene;
@@ -60,7 +60,7 @@ public class Main extends Application {
         }
 
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Great news everyone!");
+        alert.setTitle("Good news, everyone!");
         alert.setHeaderText(null);
         alert.setContentText("You WON!");
         alert.showAndWait();
