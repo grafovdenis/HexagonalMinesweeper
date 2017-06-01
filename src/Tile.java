@@ -1,6 +1,4 @@
-import javafx.event.EventHandler;
 import javafx.scene.control.Alert;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Polygon;
@@ -17,6 +15,7 @@ class Tile extends StackPane {
     private double x;
     boolean hasBomb;
     private boolean isOpen = false;
+    private boolean flagged = false;
     private static final int TILE_SIZE = Main.TILE_SIZE;
     private static double SIDE = TILE_SIZE / sqrt(3);
     private Polygon border = new Polygon(
@@ -53,14 +52,25 @@ class Tile extends StackPane {
         setOnMousePressed(e -> {
             if (e.isPrimaryButtonDown()) {
                 open();
-            }
-            if (e.isSecondaryButtonDown()) {
-                flagged();
+            } else if (e.isSecondaryButtonDown()) {
+                if (flagged) {
+                    deFlag();
+                }
+                else {
+                    flag();
+                }
             }
         });
     }
 
-    private void flagged() {
+    private void deFlag() {
+        flagged = false;
+        border.setFill(Color.YELLOWGREEN);
+        System.out.println("Hello");
+    }
+
+    private void flag() {
+        flagged = true;
         if (!isOpen)
             border.setFill(Color.RED);
     }
@@ -110,8 +120,8 @@ class Tile extends StackPane {
 
         if (hasBomb) {
             //open all
-            for (Tile[] tiles: Main.grid) {
-                for (Tile tile: tiles) {
+            for (Tile[] tiles : Main.grid) {
+                for (Tile tile : tiles) {
                     tile.text.setVisible(true);
                 }
             }
@@ -122,7 +132,7 @@ class Tile extends StackPane {
             alert.setContentText("Try Again!");
             alert.showAndWait();
 
-            Main.scene.setRoot(Main.createContent());
+            Main.scene.setRoot(Game.createContent());
             return;
         }
 
