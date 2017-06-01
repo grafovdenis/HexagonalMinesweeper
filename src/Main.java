@@ -1,11 +1,7 @@
 import javafx.application.Application;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
-
-
 
 public class Main extends Application {
 
@@ -21,7 +17,7 @@ public class Main extends Application {
 
     @Override
     public void start(Stage stage) throws Exception {
-        scene = new Scene(Game.createContent());
+        scene = new Scene(CreateContent.createContent());
 
         stage.setScene(scene);
         stage.show();

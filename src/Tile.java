@@ -52,11 +52,10 @@ class Tile extends StackPane {
         setOnMousePressed(e -> {
             if (e.isPrimaryButtonDown()) {
                 open();
-            } else if (e.isSecondaryButtonDown()) {
+            } else if (e.isSecondaryButtonDown() && !isOpen) {
                 if (flagged) {
                     deFlag();
-                }
-                else {
+                } else {
                     flag();
                 }
             }
@@ -66,7 +65,6 @@ class Tile extends StackPane {
     private void deFlag() {
         flagged = false;
         border.setFill(Color.YELLOWGREEN);
-        System.out.println("Hello");
     }
 
     private void flag() {
@@ -132,7 +130,7 @@ class Tile extends StackPane {
             alert.setContentText("Try Again!");
             alert.showAndWait();
 
-            Main.scene.setRoot(Game.createContent());
+            Main.scene.setRoot(CreateContent.createContent());
             return;
         }
 
