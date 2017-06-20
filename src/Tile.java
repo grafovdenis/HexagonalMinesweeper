@@ -7,13 +7,10 @@ import javafx.scene.text.Text;
 import static java.lang.Math.sqrt;
 
 class Tile extends StackPane {
-    double y;
-    double x;
-    boolean hasBomb;
-    boolean isOpen = false;
-    boolean flagged = false;
+    Cell cell;
     private static final int TILE_SIZE = Main.TILE_SIZE;
-    private static double SIDE = TILE_SIZE / sqrt(3);
+    private static final double SIDE = TILE_SIZE / sqrt(3);
+    private static Main main;
     private Polygon border = new Polygon(
             0, (TILE_SIZE - SIDE) / 2,
             TILE_SIZE / 2, 0,
@@ -24,69 +21,53 @@ class Tile extends StackPane {
     Text text = new Text();
 
 
-    Tile(double x, double y, boolean hasBomb) {
-        this.x = x;
-        this.y = y;
-        this.hasBomb = hasBomb;
+    Tile(Cell cell) {
+        this.cell = cell;
 
         border.setStroke(Color.LIGHTGRAY);
         border.setFill(Color.YELLOWGREEN);
 
         text.setFont(Font.font(18));
         text.setFill(Color.BLACK);
-        text.setText(hasBomb ? "X" : "");
+        text.setText(cell.hasBomb ? "X" : "");
         text.setVisible(false);
 
         getChildren().addAll(border, text);
 
 
-        double curX = (y % 2 != 0) ? x + 0.5 : x;
+        double curX = (cell.y % 2 != 0) ? cell.x + 0.5 : cell.x;
 
         setTranslateX(curX * TILE_SIZE);
-        setTranslateY(y * 0.8 * TILE_SIZE);
+        setTranslateY(cell.y * 0.8 * TILE_SIZE);
 
         setOnMousePressed(e -> {
-            if (e.isPrimaryButtonDown() && !flagged) {
-                open();
-            } else if (e.isSecondaryButtonDown() && !isOpen) {
-                if (flagged) {
-                    deFlag();
-                } else {
-                    flag();
-                }
+            if (e.isPrimaryButtonDown()) {
+                this.open();
+            } else if (e.isSecondaryButtonDown()) {
+                cell.flag();
+                System.out.println(cell.state);
+                border.setFill((cell.state == State.FLAGGED) ? Color.RED :
+                        (cell.state == State.CLOSED) ? Color.YELLOWGREEN : Color.ORANGE);
             }
+
         });
     }
 
-    private void deFlag() {
-        flagged = false;
-        border.setFill(Color.YELLOWGREEN);
-    }
-
-    private void flag() {
-        flagged = true;
-        if (!isOpen)
-            border.setFill(Color.RED);
-    }
-
-
     private void open() {
-        if (isOpen)
-            return;
+        if (cell.open()) {
+            if (cell.hasBomb)
+                Tile.main.callLose();
+            text.setVisible(true);
+            border.setFill(Color.ORANGE);
 
-        if (hasBomb) {
-            Main.callLose();
-            return;
+            if (text.getText().isEmpty()) {
+                Tile.main.game.getNeighbors(this).forEach(Tile::open);
+            }
+            Tile.main.game.check();
         }
+    }
 
-        isOpen = true;
-        text.setVisible(true);
-        border.setFill(Color.ORANGE);
-
-        if (text.getText().isEmpty()) {
-            Game.getNeighbors(this).forEach(Tile::open);
-        }
-
-        Game.check();
+    public static void link(Main main) {
+        Tile.main = main;
     }
 }

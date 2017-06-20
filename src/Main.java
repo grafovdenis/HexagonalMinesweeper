@@ -11,32 +11,28 @@ public class Main extends Application {
     static final int TILE_SIZE = 80;
     private static final int W = 800 + TILE_SIZE / 2;
     private static final int H = 600;
+    Tile[][] grid = new Tile[Game.X_TILES][Game.Y_TILES];
+    private Scene scene;
 
-    static final int X_TILES = 10;
-    static final int Y_TILES = 9;
+    Game game;
 
-    static Tile[][] grid = new Tile[X_TILES][Y_TILES];
-    private static Scene scene;
-
-    private static Parent createContent() {
+    private Parent createContent() {
         Pane root = new Pane();
         root.setPrefSize(W, H);
-        for (int y = 0; y < Y_TILES; y++) {
-            for (int x = 0; x < X_TILES; x++) {
-                Tile tile = new Tile(x, y, Math.random() < 0.2);
+        for (int y = 0; y < Game.Y_TILES; y++) {
+            for (int x = 0; x < Game.X_TILES; x++) {
+                Tile tile = new Tile(new Cell(x, y, Math.random() < 0.2));
                 grid[x][y] = tile;
                 root.getChildren().add(tile);
             }
         }
-
-        Game.loadCells();
-        Game.createField();
+        game = new Game(grid, this);
+        Tile.link(this);
         return root;
     }
 
-    static void callLose() {
-
-        for (Tile[] tiles : Game.cells) {
+    void callLose() {
+        for (Tile[] tiles : game.cells) {
             for (Tile tile : tiles) {
                 tile.text.setVisible(true);
             }
@@ -48,12 +44,12 @@ public class Main extends Application {
         alert.setContentText("Try Again!");
         alert.showAndWait();
 
-        Main.scene.setRoot(Main.createContent());
+        scene.setRoot(createContent());
     }
 
-    static void callWin() {
+    void callWin() {
 
-        for (Tile[] tiles : Game.cells) {
+        for (Tile[] tiles : game.cells) {
             for (Tile tile : tiles) {
                 tile.text.setVisible(true);
             }
@@ -65,7 +61,7 @@ public class Main extends Application {
         alert.setContentText("You WON!");
         alert.showAndWait();
 
-        Main.scene.setRoot(Main.createContent());
+        scene.setRoot(createContent());
     }
 
     @Override

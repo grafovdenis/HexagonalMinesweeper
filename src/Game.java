@@ -2,25 +2,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 class Game {
-    private static int X_TILES;
-    private static int Y_TILES;
-    static Tile[][] cells;
+    static final int X_TILES = 10;
+    static final int Y_TILES = 9;
+    Tile[][] cells;
+    Main main;
 
-    static void loadCells() {
-        X_TILES = Main.X_TILES;
-        Y_TILES = Main.Y_TILES;
-        cells = Main.grid;
+    Game(Tile[][] cells, Main main) {
+        this.cells = cells;
+        this.main = main;
+        createField();
     }
 
-    static void createField() {
+    void createField() {
         for (int y = 0; y < Y_TILES; y++) {
             for (int x = 0; x < X_TILES; x++) {
                 Tile tile = cells[x][y];
 
-                if (tile.hasBomb)
+                if (tile.cell.hasBomb)
                     continue;
 
-                long bombs = getNeighbors(tile).stream().filter(t -> t.hasBomb).count();
+                long bombs = getNeighbors(tile).stream().filter(t -> t.cell.hasBomb).count();
 
                 if (bombs > 0)
                     tile.text.setText(String.valueOf(bombs));
@@ -28,14 +29,14 @@ class Game {
         }
     }
 
-    static List<Tile> getNeighbors(Tile tile) {
+    List<Tile> getNeighbors(Tile tile) {
         List<Tile> neighbors = new ArrayList<>();
 
         //  t t
         // t X t
         //  t t
 
-        int[] points = (tile.y % 2 != 0) ? new int[]{
+        int[] points = (tile.cell.y % 2 != 0) ? new int[]{
                 0, -1,
                 1, -1,
                 -1, 0,
@@ -55,8 +56,8 @@ class Game {
             int dx = points[i];
             int dy = points[++i];
 
-            double newX = tile.x + dx;
-            double newY = tile.y + dy;
+            double newX = tile.cell.x + dx;
+            double newY = tile.cell.y + dy;
 
             if (newX >= 0 && newX < X_TILES
                     && newY >= 0 && newY < Y_TILES) {
@@ -67,14 +68,14 @@ class Game {
         return neighbors;
     }
 
-    static void check() {
+    void check() {
         int c = 0;
         for (int y = 0; y < Y_TILES; y++) {
             for (int x = 0; x < X_TILES; x++) {
                 Tile tile = cells[x][y];
-                if (tile.isOpen || tile.flagged || tile.hasBomb) c++;
+                if (tile.cell.state != State.CLOSED) c++;
             }
         }
-        if (c == X_TILES * Y_TILES) Main.callWin();
+        if (c == X_TILES * Y_TILES) main.callWin();
     }
 }
